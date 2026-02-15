@@ -160,13 +160,6 @@ jobs:
         run: npm ci
         working-directory: remote
 
-      - name: Install extensions dependencies
-        if: steps.cache-extensions-modules.outputs.cache-hit != 'true'
-        env:
-          npm_config_foreground_scripts: 'true'
-        run: npm ci
-        working-directory: extensions
-
       - name: Install build dependencies
         if: steps.cache-build-modules.outputs.cache-hit != 'true'
         env:
