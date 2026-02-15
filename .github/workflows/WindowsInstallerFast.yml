@@ -85,6 +85,20 @@ jobs:
           path: remote/node_modules
           key: windows-2022-remote-node-modules-${{ hashFiles('remote/package-lock.json') }}
 
+      # ── 5b. Cache: extensions/node_modules ───────────────────────────────
+      #
+      #   The compile step runs extension build scripts from `extensions/`
+      #   (e.g. extensions/esbuild-webview-common.mts) that import `esbuild`
+      #   from extensions/package.json. Cache and restore this workspace's
+      #   node_modules independently of the repository root cache.
+      #
+      - name: Cache extensions node_modules
+        id: cache-extensions-modules
+        uses: actions/cache@v4
+        with:
+          path: extensions/node_modules
+          key: windows-2022-extensions-node-modules-${{ hashFiles('extensions/package-lock.json') }}
+
       # ── 6. Cache: Electron binary ──────────────────────────────────────────
       #
       #   The gulp "electron x64" task downloads Electron into .build/electron
