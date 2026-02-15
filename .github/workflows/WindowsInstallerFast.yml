@@ -99,6 +99,21 @@ jobs:
           path: .build/electron
           key: windows-2022-electron-${{ hashFiles('package.json') }}
 
+      # ── 6b. Cache: build/node_modules ─────────────────────────────────────
+      #
+      #   Several build scripts under build/lib are executed directly by Node
+      #   (for example: "electron x64" and "download-builtin-extensions").
+      #   Their dependencies (e.g. ternary-stream, jsonc-parser) live in
+      #   build/package.json, so we must restore/install build/node_modules
+      #   even when root node_modules is already cached.
+      #
+      - name: Cache build node_modules
+        id: cache-build-modules
+        uses: actions/cache@v4
+        with:
+          path: build/node_modules
+          key: windows-2022-build-node-modules-${{ hashFiles('build/package-lock.json') }}
+
       # ── 7. Cache: TypeScript incremental build artefacts ───────────────────
       #
       #   .tsbuildinfo files let tsc skip unchanged files on the next compile.
@@ -130,6 +145,13 @@ jobs:
           npm_config_foreground_scripts: 'true'
         run: npm ci
         working-directory: remote
+
+      - name: Install build dependencies
+        if: steps.cache-build-modules.outputs.cache-hit != 'true'
+        env:
+          npm_config_foreground_scripts: 'true'
+        run: npm ci
+        working-directory: build
 
       # ── 9. Patch product.json ──────────────────────────────────────────────
       #
