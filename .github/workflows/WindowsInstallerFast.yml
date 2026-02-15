@@ -146,7 +146,7 @@ jobs:
           restore-keys: |
             windows-2022-tsbuildinfo-
 
-      # ── 8. Install dependencies (only when cache missed) ───────────────────
+      # ── 8. Install dependencies ───────────────────────────────────────────────
       - name: Install root dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         env:
