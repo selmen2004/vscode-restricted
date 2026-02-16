@@ -91,14 +91,13 @@ jobs:
       #   (e.g. extensions/esbuild-webview-common.mts) that import `esbuild`
       #   from extensions/package.json. Cache and restore this workspace's
       #   node_modules independently of the repository root cache.
-      #   Key is versioned so stale/partial caches can be invalidated safely.
       #
       - name: Cache extensions node_modules
         id: cache-extensions-modules
         uses: actions/cache@v4
         with:
           path: extensions/node_modules
-          key: windows-2022-extensions-node-modules-v2-${{ hashFiles('extensions/package-lock.json') }}
+          key: windows-2022-extensions-node-modules-${{ hashFiles('extensions/package-lock.json') }}
 
       # ── 6. Cache: Electron binary ──────────────────────────────────────────
       #
@@ -161,25 +160,12 @@ jobs:
         run: npm ci
         working-directory: remote
 
-      - name: Install extensions dependencies
-        env:
-          npm_config_foreground_scripts: 'true'
-        run: npm ci --include=dev
-        working-directory: extensions
-
       - name: Install build dependencies
         if: steps.cache-build-modules.outputs.cache-hit != 'true'
         env:
           npm_config_foreground_scripts: 'true'
         run: npm ci
         working-directory: build
-
-      - name: Rehydrate workspace dependencies on root cache hit
-        if: steps.cache-node-modules.outputs.cache-hit == 'true'
-        env:
-          npm_config_foreground_scripts: 'true'
-          npm_command: ci
-        run: node build/npm/postinstall.ts
 
       # ── 9. Patch product.json ──────────────────────────────────────────────
       #
