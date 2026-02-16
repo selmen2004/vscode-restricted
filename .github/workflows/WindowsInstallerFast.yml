@@ -148,7 +148,6 @@ jobs:
 
       # ── 8. Install dependencies ───────────────────────────────────────────────
       - name: Install root dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         env:
           npm_config_foreground_scripts: 'true'
         run: npm ci
